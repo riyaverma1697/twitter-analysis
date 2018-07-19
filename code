@@ -1,0 +1,69 @@
+import nltk
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+df=pd.read_csv('sentiment.csv',error_bad_lines=False)
+
+import re
+#nltk.download('stopwords')
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+corpus=[]
+for i in range(0,4000):
+    review=re.sub('[^a-zA-Z]',' ',df['SentimentText'][i])
+    review=review.lower()
+    review=review.split()
+    ps=PorterStemmer()
+    review=[ps.stem(word) for word in review if not word in stopwords.words('english')]
+    review=' '.join(review)
+    corpus.append(review)
+from sklearn.feature_extraction.text import TfidfVectorizer
+cv=TfidfVectorizer()
+x=cv.fit_transform(corpus).toarray()
+y=df.iloc[:4000,1].values
+
+
+
+
+tstt=corpus[999]
+
+from sklearn.feature_extraction.text import CountVectorizer
+cv=CountVectorizer()
+x=cv.fit_transform(corpus).toarray()
+y=df.iloc[:1000,1].values
+
+
+
+#from sklearn.cross_validation import train_test_split
+#x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=0)
+
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import GaussianNB
+cls=MultinomialNB()
+cls=GaussianNB()
+cls.fit(x,y)
+
+df2=pd.read_csv('tweets_record.csv',header=None,error_bad_lines=False)
+corpus2=[]
+for i in range(0,10):
+    
+    tokens=nltk.word_tokenize(df2[0][i])
+    
+    ps2=PorterStemmer()
+    tokens=[ps2.stem(word) for word in tokens if not word in stopwords.words('english')]
+    tokens=' '.join(tokens)
+    corpus2.append(tokens)
+    
+#cv2=CountVectorizer()
+x_test=cv.transform(corpus2).toarray()
+txt=cv.transform(['i am enjoying myself']).toarray()
+y_pred=cls.predict(x_test)
+
+
+print(cls.score(x,y))
+for i in range(0,100):
+    plt.scatter(i,y_pred[i])
+plt.show()
+
+df3=pd.concat([df2[:300],pd.DataFrame(y_pred)],axis=1)
+df3.to_csv('analysis.csv',header=['tweet','sentiment'],index=False)
