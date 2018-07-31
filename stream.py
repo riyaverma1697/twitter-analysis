@@ -26,12 +26,12 @@ class StdOutListener(tweepy.StreamListener):
     
 
 listener = StdOutListener()
-consumer_key = "3JK7Idi0naOx94B7CeCGP73db"
-consumer_secret = "PFBP1otinXb7OgdvoLbikHpYuPzE2qs562rTB4I5JvSGcVuH2R"
-access_token = "998969501948428290-MsaH5w3HFIzNxQGhxPRtPQT28PeMEaB"
-access_token_secret = "rqvjfK7VfYc4Zn2k2rDvznMoLqKIDzOKFHlLIWDluEeMB"
+consumer_key = ""
+consumer_secret = ""
+access_token = ""
+access_token_secret = ""
 auth = OAuthHandler(consumer_key, consumer_secret)
 #setting access token and secret
 auth.set_access_token(access_token, access_token_secret)
 stream =Stream(auth,listener)
-stream.filter(track=['Trump'])
+stream.filter(track=['NAME'])
